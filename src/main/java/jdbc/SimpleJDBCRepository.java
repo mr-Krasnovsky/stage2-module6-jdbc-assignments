@@ -162,4 +162,24 @@ public class SimpleJDBCRepository {
             e.printStackTrace();
         }
         }
+
+    public static void main(String[] args) throws SQLException {
+        SimpleJDBCRepository rep = new SimpleJDBCRepository();
+        Connection connection = CustomDataSource.getInstance().getConnection();
+        Statement st = connection.createStatement();
+        st.execute("CREATE TABLE myusers (\n" +
+                " id serial primary key, \n" +
+                " firstname VARCHAR(255), \n" +
+                " lastname VARCHAR(255), \n" +
+                " age INT\n" +
+                ")");
+
+        User user = new User(1L, "User1", "userLastName", 30);
+        user.setId(rep.createUser(user));
+        rep.findUserById(1l);
+        User user1 = new User(1L, "User1.1", "userLastName1.1", 15);
+        rep.updateUser(user1);
+        rep.findAllUser();
+        rep.deleteUser(1L);
+    }
     }
