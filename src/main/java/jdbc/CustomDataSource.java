@@ -44,20 +44,29 @@ public class CustomDataSource implements DataSource {
             } catch (IOException e){
                 e.printStackTrace();
             }
-
         }
         return instance;
     }
 
     @Override
     public Connection getConnection() throws SQLException {
-        return new CustomConnector().getConnection(url, name, password);
-    }
+            try {
+                Class.forName(driver);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            return new CustomConnector().getConnection(url, name, password);
+        }
 
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
-        return new CustomConnector().getConnection(url, name, password);
-    }
+                try {
+                    Class.forName(driver);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                return new CustomConnector().getConnection(url, name, password);
+            }
 
     @Override
     public PrintWriter getLogWriter() throws SQLException {
@@ -71,7 +80,6 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
-
     }
 
     @Override

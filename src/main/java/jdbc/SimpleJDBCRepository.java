@@ -20,13 +20,20 @@ public class SimpleJDBCRepository {
     private PreparedStatement ps = null;
     private Statement st = null;
 
-    private static final String createUserSQL = "INSERT INTO myusers (firstname, lastname, age) VALUES ( ?, ?, ?)";
-    private static final String updateUserSQL = "UPDATE myusers SET firstname = ?, lastname = ?, age = ? WHERE id = ?";
-    private static final String deleteUserSQL = "DELETE FROM users WHERE id = ?";
-    private static final String findUserByIdSQL = "SELECT * FROM users WHERE id = ?";
-    private static final String findUserByNameSQL = "SELECT * FROM users WHERE name = ?";
-    private static final String findAllUserSQL = "SELECT * FROM users";
+    private static final String createUserSQL = "INSERT INTO myusers (firstname, lastname, age) VALUES (?,?,?)";
+    private static final String updateUserSQL = "UPDATE myusers SET firstname=?, lastname=?, age=? WHERE id=?";
+    private static final String deleteUserSQL = "DELETE FROM myusers WHERE id=?";
+    private static final String findUserByIdSQL = "SELECT*FROM myusers WHERE id=?";
+    private static final String findUserByNameSQL = "SELECT*FROM myusers WHERE firstname=?";
+    private static final String findAllUserSQL = "SELECT*FROM myusers";
 
+    {
+        try {
+            connection = CustomDataSource.getInstance().getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public Long createUser(User user) {
                 Long id = null;
@@ -42,7 +49,7 @@ public class SimpleJDBCRepository {
                 id = keys.getLong(1);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         } finally {
             closeResources();
         }
@@ -162,24 +169,4 @@ public class SimpleJDBCRepository {
             e.printStackTrace();
         }
         }
-
-    public static void main(String[] args) throws SQLException {
-        SimpleJDBCRepository rep = new SimpleJDBCRepository();
-        Connection connection = CustomDataSource.getInstance().getConnection();
-        Statement st = connection.createStatement();
-        st.execute("CREATE TABLE myusers (\n" +
-                " id serial primary key, \n" +
-                " firstname VARCHAR(255), \n" +
-                " lastname VARCHAR(255), \n" +
-                " age INT\n" +
-                ")");
-
-        User user = new User(1L, "User1", "userLastName", 30);
-        user.setId(rep.createUser(user));
-        rep.findUserById(1l);
-        User user1 = new User(1L, "User1.1", "userLastName1.1", 15);
-        rep.updateUser(user1);
-        rep.findAllUser();
-        rep.deleteUser(1L);
-    }
     }
