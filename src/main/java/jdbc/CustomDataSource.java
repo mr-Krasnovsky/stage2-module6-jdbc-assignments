@@ -21,6 +21,7 @@ public class CustomDataSource implements DataSource {
     private final String name;
     private final String password;
     private final Connection connection;
+    private static final SQLException MY_EXCEPTION = new SQLException();
 
 
     private CustomDataSource(String driver, String url, String password, String name) {
@@ -36,6 +37,7 @@ public class CustomDataSource implements DataSource {
         if (instance == null) {
             synchronized (CustomDataSource.class) {
                 if (instance == null) {
+                    try {
                     Properties properties = new Properties();
                     properties.load(CustomDataSource.class.getClassLoader().getResourceAsStream("app.properties"));
                     instance = new CustomDataSource(
@@ -43,6 +45,9 @@ public class CustomDataSource implements DataSource {
                             properties.getProperty("postgres.url"),
                             properties.getProperty("postgres.password"),
                             properties.getProperty("postgres.name"));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -61,35 +66,35 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public PrintWriter getLogWriter() throws SQLException {
-        return null;
+        throw MY_EXCEPTION;
     }
 
     @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
-        throw new SQLException();
+        throw MY_EXCEPTION;
     }
 
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
-
+        throw MY_EXCEPTION;
     }
 
     @Override
     public int getLoginTimeout() throws SQLException {
-        return 0;
+        throw MY_EXCEPTION;
     }
 
        @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        return null;
+        throw MY_EXCEPTION;
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return false;
+        throw MY_EXCEPTION;
     }
     @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return null;
+        throw new SQLFeatureNotSupportedException();
     }
 }
