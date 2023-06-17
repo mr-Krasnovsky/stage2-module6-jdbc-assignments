@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class SimpleJDBCRepository {
 
-    private Connection connection;
+    private Connection connection = null;
     private PreparedStatement ps = null;
     private Statement st = null;
 
@@ -31,9 +31,9 @@ public class SimpleJDBCRepository {
         {
             connection = CustomDataSource.getInstance().getConnection();
         }
-        catch (SQLException throwables)
+        catch (SQLException e)
         {
-            throwables.printStackTrace();
+            e.printStackTrace();
         }
     }
 

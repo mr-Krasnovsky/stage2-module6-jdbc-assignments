@@ -22,15 +22,15 @@ public class CustomDataSource implements DataSource {
     private final String url;
     private final String name;
     private final String password;
-    private final Connection connection;
+
 
     private CustomDataSource(String driver, String url, String password, String name){
-        connection = new CustomConnector().getConnection(url, name, password);
         this.driver = driver;
         this.url = url;
         this.name = name;
         this.password = password;
     }
+
 
     public static CustomDataSource getInstance() {
         if(instance == null) {
