@@ -25,11 +25,7 @@ public class SimpleJDBCRepository {
     private static final String findAllUserSQL = "SELECT*FROM myusers";
 
     {
-        try {
-            connection = CustomDataSource.getInstance().getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        connection = CustomDataSource.getInstance().getConnection();
     }
 
     @SneakyThrows
