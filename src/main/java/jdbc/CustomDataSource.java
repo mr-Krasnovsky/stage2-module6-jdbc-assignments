@@ -25,11 +25,7 @@ public class CustomDataSource implements DataSource {
 
 
     private CustomDataSource(String driver, String url, String password, String name) {
-        try {
-            connection = new CustomConnector().getConnection(url, name, password);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        connection = new CustomConnector().getConnection(url, name, password);
         this.driver = driver;
         this.url = url;
         this.name = name;
@@ -84,12 +80,7 @@ public class CustomDataSource implements DataSource {
         return 0;
     }
 
-    @Override
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        throw new SQLFeatureNotSupportedException();
-    }
-
-    @Override
+       @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return null;
     }
