@@ -26,26 +26,27 @@ public class SimpleJDBCRepository {
     private static final String findUserByIdSQL = "SELECT*FROM myusers WHERE id=?";
     private static final String findUserByNameSQL = "SELECT*FROM myusers WHERE firstname=?";
     private static final String findAllUserSQL = "SELECT*FROM myusers";
-
     {
-        try {
+        try
+        {
             connection = CustomDataSource.getInstance().getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
         }
     }
 
     public Long createUser(User user) {
-                Long id = null;
+        Long id = null;
         try {
-            connection = CustomDataSource.getInstance().getConnection();
-            ps = connection.prepareStatement(createUserSQL, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, user.getFirstName());
-            ps.setString(2, user.getLastName());
-            ps.setInt(3, user.getAge());
-            ps.executeUpdate();
-            ResultSet keys = ps.getGeneratedKeys();
-            if (keys.next()){
+            PreparedStatement preparedStatement = connection.prepareStatement(createUserSQL, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, user.getFirstName());
+            preparedStatement.setString(2, user.getLastName());
+            preparedStatement.setInt(3, user.getAge());
+            preparedStatement.executeUpdate();
+            ResultSet keys = preparedStatement.getGeneratedKeys();
+            if (keys.next()) {
                 id = keys.getLong(1);
             }
         } catch (SQLException e) {
@@ -59,10 +60,9 @@ public class SimpleJDBCRepository {
     public User findUserById(Long userId) {
         User user = null;
         try {
-            connection = CustomDataSource.getInstance().getConnection();
-            ps = connection.prepareStatement(findUserByIdSQL);
-            ps.setLong(1, userId);
-            ResultSet resultSet = ps.executeQuery();
+            PreparedStatement preparedStatement = connection.prepareStatement(findUserByIdSQL);
+            preparedStatement.setLong(1, userId);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
                 Long id = resultSet.getLong("id");
@@ -82,10 +82,9 @@ public class SimpleJDBCRepository {
     public User findUserByName(String userName) {
         User user = null;
         try {
-            connection = CustomDataSource.getInstance().getConnection();
-            ps = connection.prepareStatement(findUserByNameSQL);
-            ps.setString(1, userName);
-            ResultSet resultSet = ps.executeQuery();
+            PreparedStatement preparedStatement  = connection.prepareStatement(findUserByNameSQL);
+            preparedStatement.setString(1, userName);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
                 Long id = resultSet.getLong("id");
@@ -102,40 +101,26 @@ public class SimpleJDBCRepository {
         return user;
     }
 
-    public List<User> findAllUser() {
-        List<User> userList = new ArrayList<>();
-        try {
-            connection = CustomDataSource.getInstance().getConnection();
-            st = connection.createStatement();
-            ResultSet resultSet = st.executeQuery(findAllUserSQL);
-
-            while (resultSet.next()) {
-                Long id = resultSet.getLong("id");
-                String firstname = resultSet.getString("firstname");
-                String lastname = resultSet.getString("lastname");
-                int age = resultSet.getInt("age");
-                User user = new User(id, firstname, lastname, age);
-                userList.add(user);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            closeResources();
+    public List<User> findAllUser() throws SQLException {
+        ResultSet rs = connection.createStatement().executeQuery(findAllUserSQL);
+        List<User> users = new ArrayList<>();
+        while (rs.next()) {
+            users.add(new User(rs.getLong("id"), rs.getString("firstname"), rs.getString("lastname"),
+                    rs.getInt("age")));
         }
-        return userList;
+        return users;
     }
 
 
     public User updateUser(User user) {
         try {
-            connection = CustomDataSource.getInstance().getConnection();
-            ps = connection.prepareStatement(updateUserSQL);
-            ps.setString(1, user.getFirstName());
-            ps.setString(2, user.getLastName());
-            ps.setInt(3, user.getAge());
-            ps.setLong(4, user.getId());
-            ps.executeUpdate();
-        }catch (SQLException e){
+            PreparedStatement preparedStatement = connection.prepareStatement(updateUserSQL);
+            preparedStatement.setString(1, user.getFirstName());
+            preparedStatement.setString(2, user.getLastName());
+            preparedStatement.setInt(3, user.getAge());
+            preparedStatement.setLong(4, user.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             closeResources();
@@ -145,10 +130,9 @@ public class SimpleJDBCRepository {
 
     public void deleteUser(Long userId) {
         try {
-            connection = CustomDataSource.getInstance().getConnection();
-            ps = connection.prepareStatement(deleteUserSQL);
-            ps.setLong(1, userId);
-            ps.executeUpdate();
+            PreparedStatement preparedStatement = connection.prepareStatement(deleteUserSQL);
+            preparedStatement.setLong(1, userId);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -168,5 +152,5 @@ public class SimpleJDBCRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        }
     }
+}
