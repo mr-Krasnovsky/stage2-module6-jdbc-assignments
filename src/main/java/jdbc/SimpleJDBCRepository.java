@@ -26,13 +26,11 @@ public class SimpleJDBCRepository {
     private static final String findUserByIdSQL = "SELECT*FROM myusers WHERE id=?";
     private static final String findUserByNameSQL = "SELECT*FROM myusers WHERE firstname=?";
     private static final String findAllUserSQL = "SELECT*FROM myusers";
+
     {
-        try
-        {
+        try {
             connection = CustomDataSource.getInstance().getConnection();
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -40,12 +38,12 @@ public class SimpleJDBCRepository {
     public Long createUser(User user) {
         Long id = null;
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(createUserSQL, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, user.getFirstName());
-            preparedStatement.setString(2, user.getLastName());
-            preparedStatement.setInt(3, user.getAge());
-            preparedStatement.executeUpdate();
-            ResultSet keys = preparedStatement.getGeneratedKeys();
+            ps = connection.prepareStatement(createUserSQL, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            ps.setInt(3, user.getAge());
+            ps.executeUpdate();
+            ResultSet keys = ps.getGeneratedKeys();
             if (keys.next()) {
                 id = keys.getLong(1);
             }
@@ -60,9 +58,9 @@ public class SimpleJDBCRepository {
     public User findUserById(Long userId) {
         User user = null;
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(findUserByIdSQL);
-            preparedStatement.setLong(1, userId);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            ps = connection.prepareStatement(findUserByIdSQL);
+            ps.setLong(1, userId);
+            ResultSet resultSet = ps.executeQuery();
 
             if (resultSet.next()) {
                 Long id = resultSet.getLong("id");
@@ -82,10 +80,9 @@ public class SimpleJDBCRepository {
     public User findUserByName(String userName) {
         User user = null;
         try {
-            PreparedStatement preparedStatement  = connection.prepareStatement(findUserByNameSQL);
-            preparedStatement.setString(1, userName);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
+            ps = connection.prepareStatement(findUserByNameSQL);
+            ps.setString(1, userName);
+            ResultSet resultSet = ps.executeQuery();
             if (resultSet.next()) {
                 Long id = resultSet.getLong("id");
                 String firstname = resultSet.getString("firstname");
@@ -114,12 +111,13 @@ public class SimpleJDBCRepository {
 
     public User updateUser(User user) {
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(updateUserSQL);
-            preparedStatement.setString(1, user.getFirstName());
-            preparedStatement.setString(2, user.getLastName());
-            preparedStatement.setInt(3, user.getAge());
-            preparedStatement.setLong(4, user.getId());
-            preparedStatement.executeUpdate();
+            ps = connection.prepareStatement(updateUserSQL);
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            ps.setInt(3, user.getAge());
+            ps.setLong(4, user.getId());
+            ps.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -130,16 +128,15 @@ public class SimpleJDBCRepository {
 
     public void deleteUser(Long userId) {
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(deleteUserSQL);
-            preparedStatement.setLong(1, userId);
-            preparedStatement.executeUpdate();
+            ps = connection.prepareStatement(deleteUserSQL);
+            ps.setLong(1, userId);
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             closeResources();
         }
     }
-
 
     private void closeResources() {
         try {
