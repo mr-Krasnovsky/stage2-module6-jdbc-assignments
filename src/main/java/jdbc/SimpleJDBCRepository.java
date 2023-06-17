@@ -49,8 +49,6 @@ public class SimpleJDBCRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeResources();
         }
         return id;
     }
@@ -71,8 +69,6 @@ public class SimpleJDBCRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeResources();
         }
         return user;
     }
@@ -92,8 +88,6 @@ public class SimpleJDBCRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeResources();
         }
         return user;
     }
@@ -120,8 +114,6 @@ public class SimpleJDBCRepository {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeResources();
         }
         return findUserById(user.getId());
     }
@@ -131,21 +123,6 @@ public class SimpleJDBCRepository {
             ps = connection.prepareStatement(deleteUserSQL);
             ps.setLong(1, userId);
             ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            closeResources();
-        }
-    }
-
-    private void closeResources() {
-        try {
-            if (ps != null) {
-                ps.close();
-            }
-            if (st != null) {
-                st.close();
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
