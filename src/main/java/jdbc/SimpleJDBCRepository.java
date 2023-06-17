@@ -1,10 +1,7 @@
 package jdbc;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -35,6 +32,7 @@ public class SimpleJDBCRepository {
         }
     }
 
+    @SneakyThrows
     public Long createUser(User user) {
         Long id = null;
         try {
@@ -53,13 +51,13 @@ public class SimpleJDBCRepository {
         return id;
     }
 
+    @SneakyThrows
     public User findUserById(Long userId) {
         User user = null;
         try {
             ps = connection.prepareStatement(findUserByIdSQL);
             ps.setLong(1, userId);
             ResultSet resultSet = ps.executeQuery();
-
             if (resultSet.next()) {
                 Long id = resultSet.getLong("id");
                 String firstname = resultSet.getString("firstname");
@@ -73,6 +71,7 @@ public class SimpleJDBCRepository {
         return user;
     }
 
+    @SneakyThrows
     public User findUserByName(String userName) {
         User user = null;
         try {
@@ -92,6 +91,7 @@ public class SimpleJDBCRepository {
         return user;
     }
 
+    @SneakyThrows
     public List<User> findAllUser() throws SQLException {
         ResultSet rs = connection.createStatement().executeQuery(findAllUserSQL);
         List<User> users = new ArrayList<>();
@@ -102,19 +102,13 @@ public class SimpleJDBCRepository {
         return users;
     }
 
-
+    @SneakyThrows
     public User updateUser(User user) {
-        try {
-            ps = connection.prepareStatement(updateUserSQL);
-            ps.setString(1, user.getFirstName());
-            ps.setString(2, user.getLastName());
-            ps.setInt(3, user.getAge());
-            ps.setLong(4, user.getId());
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        ps = connection.prepareStatement(updateUserSQL);
+        ps.setLong(4, user.getId());
+        ps.setString(1, user.getFirstName());
+        ps.setString(2, user.getLastName());
+        ps.setInt(3, user.getAge());
         return findUserById(user.getId());
     }
 

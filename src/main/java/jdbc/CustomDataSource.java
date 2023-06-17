@@ -4,10 +4,9 @@ import javax.sql.DataSource;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Synchronized;
+import lombok.SneakyThrows;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -22,32 +21,33 @@ public class CustomDataSource implements DataSource {
     private final String url;
     private final String name;
     private final String password;
-    private static final Object mute = new Object();
+    private final Connection connection;
 
 
     private CustomDataSource(String driver, String url, String password, String name) {
+        try {
+            connection = new CustomConnector().getConnection(url, name, password);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         this.driver = driver;
         this.url = url;
         this.name = name;
         this.password = password;
     }
 
-
+    @SneakyThrows
     public static CustomDataSource getInstance() {
         if (instance == null) {
-            synchronized (mute) {
+            synchronized (CustomDataSource.class) {
                 if (instance == null) {
-                    try {
-                        Properties properties = new Properties();
-                        properties.load(CustomDataSource.class.getClassLoader().getResourceAsStream("app.properties"));
-                        instance = new CustomDataSource(
-                                properties.getProperty("postgres.driver"),
-                                properties.getProperty("postgres.url"),
-                                properties.getProperty("postgres.password"),
-                                properties.getProperty("postgres.name"));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    Properties properties = new Properties();
+                    properties.load(CustomDataSource.class.getClassLoader().getResourceAsStream("app.properties"));
+                    instance = new CustomDataSource(
+                            properties.getProperty("postgres.driver"),
+                            properties.getProperty("postgres.url"),
+                            properties.getProperty("postgres.password"),
+                            properties.getProperty("postgres.name"));
                 }
             }
         }
@@ -56,17 +56,17 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public Connection getConnection() throws SQLException {
-        return new CustomConnector().getConnection(url, name, password);
+        return connection;
     }
 
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
-        return new CustomConnector().getConnection(url, name, password);
+        return connection;
     }
 
     @Override
     public PrintWriter getLogWriter() throws SQLException {
-        throw new SQLException();
+        return null;
     }
 
     @Override
@@ -76,26 +76,30 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
-        throw new SQLException();
+
     }
 
     @Override
     public int getLoginTimeout() throws SQLException {
-        throw new SQLException();
+        return 0;
     }
 
     @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        throw new SQLFeatureNotSupportedException ();
+        throw new SQLFeatureNotSupportedException();
     }
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        throw new SQLException();
+        return null;
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        throw new SQLException();
+        return false;
+    }
+    @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return null;
     }
 }
