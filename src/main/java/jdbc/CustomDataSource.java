@@ -7,11 +7,10 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.util.Properties;
+import java.sql.*;
+import java.util.*;
 import java.util.logging.Logger;
+
 
 @Getter
 @Setter
