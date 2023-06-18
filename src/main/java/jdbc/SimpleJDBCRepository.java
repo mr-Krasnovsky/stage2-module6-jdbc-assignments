@@ -20,12 +20,12 @@ public class SimpleJDBCRepository {
     private PreparedStatement ps = null;
     private Statement st = null;
 
-    private static final String createUserSQL = "INSERT INTO myusers (firstname, lastname, age) VALUES (?,?,?)";
-    private static final String updateUserSQL = "UPDATE myusers SET firstname=?, lastname=?, age=? WHERE id=?";
-    private static final String deleteUserSQL = "DELETE FROM myusers WHERE id=?";
-    private static final String findUserByIdSQL = "SELECT*FROM myusers WHERE id=?";
-    private static final String findUserByNameSQL = "SELECT*FROM myusers WHERE firstname=?";
-    private static final String findAllUserSQL = "SELECT*FROM myusers";
+    private static final String createUserSQL = "INSERT INTO MYUSERS (FIRSTNAME, LASTNAME, AGE) VALUES (?,?,?)";
+    private static final String updateUserSQL = "UPDATE MYUSERS SET FIRSTNAME=?, LASTNAME=?, AGE=? WHERE ID=?";
+    private static final String deleteUserSQL = "DELETE FROM MYUSERS WHERE ID=?";
+    private static final String findUserByIdSQL = "SELECT*FROM MYUSERS WHERE ID=?";
+    private static final String findUserByNameSQL = "SELECT*FROM MYUSERS WHERE FIRSTNAME=?";
+    private static final String findAllUserSQL = "SELECT*FROM MYUSERS";
 
 
     public Long createUser(User user) {
@@ -58,14 +58,12 @@ public class SimpleJDBCRepository {
             ResultSet resultSet = ps.executeQuery();
             if (resultSet.next()) {
                 user = build(resultSet);
-                System.out.println(user.getFirstName());
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             closeResources();
         }
-        System.out.println(user.getFirstName());
         return user;
     }
 

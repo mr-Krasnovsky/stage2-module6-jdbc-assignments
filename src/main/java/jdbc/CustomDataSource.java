@@ -75,11 +75,12 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
